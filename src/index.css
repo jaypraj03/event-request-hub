@@ -1,0 +1,53 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, ui-serif, serif;
+
+  --color-ink: #16233a;
+  --color-navy: #1e3a5f;
+  --color-navy-700: #17304f;
+  --color-gold: #e3a43a;
+  --color-cream: #faf6ef;
+  --color-line: #e7e1d6;
+}
+
+html {
+  background: var(--color-cream);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(1200px 500px at 85% -10%, #fbe9c8 0%, transparent 60%),
+    var(--color-cream);
+  background-attachment: fixed;
+}
+
+/* Native date/time inputs: match the rest of the form */
+input[type='date'],
+input[type='time'] {
+  min-height: 2.75rem;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.animate-rise {
+  animation: rise 0.25s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise {
+    animation: none;
+  }
+}

@@ -76,7 +76,7 @@ supabase/
 ```bash
 npm install
 npm run dev        # demo mode, no backend needed
-npm test           # 29 tests: validation, filters and database security
+npm test           # 30 tests: validation, filters and database security
 npm run build
 ```
 

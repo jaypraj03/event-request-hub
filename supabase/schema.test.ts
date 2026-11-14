@@ -18,10 +18,6 @@ const SUPABASE_STUBS = `
   grant execute on function auth.uid() to anon, authenticated;
 `
 
-const GRANTS = `
-  grant select, insert, update, delete on all tables in schema public to anon, authenticated;
-`
-
 const ADMIN = '00000000-0000-0000-0000-00000000000a'
 const AV = '00000000-0000-0000-0000-0000000000a1'
 const KITCHEN = '00000000-0000-0000-0000-0000000000b1'
@@ -53,7 +49,6 @@ beforeAll(async () => {
   db = new PGlite()
   await db.exec(SUPABASE_STUBS)
   await db.exec(readFileSync(new URL('./migrations/001_schema.sql', import.meta.url), 'utf8').replace(/create extension[^;]+;/, ''))
-  await db.exec(GRANTS)
   await db.exec(`
     insert into auth.users values ('${ADMIN}','admin@x.org'),('${AV}','av@x.org'),('${KITCHEN}','kitchen@x.org');
     insert into staff values ('${ADMIN}','admin@x.org','Admin','admin'),('${AV}','av@x.org','Arjun','av'),('${KITCHEN}','kitchen@x.org','Meera','kitchen');
@@ -76,8 +71,9 @@ describe('public submission', () => {
   })
 
   it('anon cannot read anything back', async () => {
-    expect(await as('anon', null, 'select * from events')).toHaveLength(0)
-    expect(await as('anon', null, 'select * from department_requests')).toHaveLength(0)
+    await expect(as('anon', null, 'select * from events')).rejects.toThrow(/permission denied/)
+    await expect(as('anon', null, 'select * from department_requests')).rejects.toThrow(/permission denied/)
+    await expect(as('anon', null, `insert into events (reference, requester_name, phone, email, event_name, event_date, requesting_team) values ('EVT-HACK','x','1','a@b.co','x', current_date, 'x')`)).rejects.toThrow(/permission denied/)
   })
 
   it('rejects empty submissions, past dates and unknown departments atomically', async () => {
@@ -127,7 +123,12 @@ describe('row level security', () => {
   })
 
   it('staff cannot rewrite what the requester asked for', async () => {
-    await expect(as('authenticated', AV, `update department_requests set details = '{}' where department = 'av'`)).rejects.toThrow(/Only status/)
+    await expect(as('authenticated', AV, `update department_requests set details = '{}' where department = 'av'`)).rejects.toThrow(/permission denied/)
+  })
+
+  it('staff cannot delete requests or events', async () => {
+    await expect(as('authenticated', ADMIN, `delete from department_requests`)).rejects.toThrow(/permission denied/)
+    await expect(as('authenticated', ADMIN, `delete from events`)).rejects.toThrow(/permission denied/)
   })
 
   it('comment author is stamped from the session and fake status entries are blocked', async () => {

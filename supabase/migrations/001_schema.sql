@@ -241,3 +241,18 @@ create policy "staff comment on visible requests" on public.request_comments
     select 1 from public.department_requests r
     where r.id = request_comments.request_id and public.can_see_department(r.department)
   ));
+
+-- ─────────────────────────────────────────────────────────────
+-- Privileges (least privilege; the project does not auto-expose tables)
+-- The public (anon) gets no table access at all — only submit_event_request().
+-- ─────────────────────────────────────────────────────────────
+
+grant usage on schema public to anon, authenticated;
+
+grant execute on function public.current_staff_role()        to authenticated;
+grant execute on function public.can_see_department(text)    to authenticated;
+
+grant select on public.staff, public.events, public.department_requests, public.request_comments to authenticated;
+grant update (status) on public.department_requests to authenticated;          -- status only
+grant insert (request_id, body, author_name, kind) on public.request_comments to authenticated;
+grant select, insert, update, delete on public.department_settings to authenticated; -- RLS: admins only

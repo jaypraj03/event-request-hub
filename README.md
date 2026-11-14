@@ -2,7 +2,7 @@
 
 A full-stack web app that replaces scattered emails and texts for event planning at a community center. A requester fills in **one form** for their event, adds a request for each department they need (Facilities, IT, Kitchen, Audio/Video, Photo/Video, Parking), and **each team only receives its own part** in a dashboard where it can review, approve and comment.
 
-**Live demo:** _add your link here_ — demo logins: `admin@demo.org` or `av@demo.org`, password `demo1234`
+**Live app:** https://event-request-hub.vercel.app — submit a request on the home page; staff sign in at **Staff login**. (Run `npm run dev` without env vars for a self-contained demo with sample data.)
 
 <!-- Add a screenshot: save it as docs/screenshot.png and replace this line with ![screenshot](docs/screenshot.png) -->
 
